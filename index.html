@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Result Dashboard</title>
+    <meta name="description" content="Evaluate students across multiple subjects with beautiful analytics and detailed profiles.">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Theme Toggle -->
+    <button id="theme-toggle" class="theme-toggle" title="Toggle theme">
+        <span id="theme-icon">🌙</span>
+    </button>
+
+    <div class="app">
+
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-glow"></div>
+            <h1>Student Result Dashboard</h1>
+            <p class="subtitle">Configure subjects, enter marks, and get detailed analytics for every student.</p>
+        </header>
+
+        <!-- Subject Configuration -->
+        <section class="glass-panel config-panel">
+            <div class="panel-header">
+                <h2>📚 Subjects</h2>
+                <div class="threshold-control">
+                    <label for="pass-mark">Pass Mark</label>
+                    <input type="number" id="pass-mark" value="35" min="0" max="100">
+                </div>
+            </div>
+            <div class="subject-chips" id="subject-chips">
+                <!-- Dynamic subject chips -->
+            </div>
+            <button id="add-subject-btn" class="btn btn-ghost btn-sm">+ Add Subject</button>
+        </section>
+
+        <!-- Student Input -->
+        <section class="glass-panel input-panel">
+            <div class="panel-header">
+                <h2>✏️ Student Data</h2>
+                <div class="btn-group">
+                    <button id="add-row-btn" class="btn btn-outline">+ Add Student</button>
+                    <button id="evaluate-btn" class="btn btn-primary">
+                        <span class="btn-shine"></span>
+                        Evaluate All
+                    </button>
+                </div>
+            </div>
+            <div class="table-scroll">
+                <table class="input-table" id="input-table">
+                    <thead>
+                        <tr id="input-header">
+                            <th class="col-num">#</th>
+                            <th class="col-name">Student Name</th>
+                            <!-- Dynamic subject columns injected by JS -->
+                            <th class="col-action"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="input-body">
+                        <!-- Dynamic rows -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Dashboard -->
+        <section class="glass-panel dashboard hidden" id="dashboard">
+            <div class="panel-header">
+                <h2>📊 Results Dashboard</h2>
+                <button id="clear-btn" class="btn btn-danger btn-sm">Clear</button>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="stats-row" id="stats-row">
+                <div class="stat-card card-total">
+                    <span class="stat-icon">👥</span>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-total">0</span>
+                        <span class="stat-label">Total</span>
+                    </div>
+                </div>
+                <div class="stat-card card-pass">
+                    <span class="stat-icon">✅</span>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-pass">0</span>
+                        <span class="stat-label">Passed</span>
+                    </div>
+                </div>
+                <div class="stat-card card-fail">
+                    <span class="stat-icon">❌</span>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-fail">0</span>
+                        <span class="stat-label">Failed</span>
+                    </div>
+                </div>
+                <div class="stat-card card-avg">
+                    <span class="stat-icon">📈</span>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-avg">0</span>
+                        <span class="stat-label">Class Avg</span>
+                    </div>
+                </div>
+                <div class="stat-card card-top">
+                    <span class="stat-icon">🏆</span>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-top">—</span>
+                        <span class="stat-label">Topper</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="tab active" data-filter="all">All Students</button>
+                <button class="tab" data-filter="passed">✅ Passed</button>
+                <button class="tab" data-filter="failed">❌ Failed</button>
+            </div>
+
+            <!-- Results Table -->
+            <div class="table-scroll">
+                <table class="results-table" id="results-table">
+                    <thead>
+                        <tr id="results-header">
+                            <th>Rank</th>
+                            <th>Student Name</th>
+                            <!-- Dynamic subject columns -->
+                            <th>Total</th>
+                            <th>Average</th>
+                            <th>Grade</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body"></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- Student Profile Overlay -->
+    <div class="profile-overlay hidden" id="profile-overlay">
+        <div class="profile-backdrop" id="profile-backdrop"></div>
+        <div class="profile-drawer glass-panel" id="profile-drawer">
+            <button class="close-btn" id="close-profile">✕</button>
+
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <div class="profile-avatar" id="profile-avatar">A</div>
+                <div class="profile-title">
+                    <h2 id="profile-name">Student Name</h2>
+                    <div class="profile-meta">
+                        <span class="rank-badge" id="profile-rank">#1</span>
+                        <span class="status-pill" id="profile-status">PASS</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Stats -->
+            <div class="profile-stats">
+                <div class="p-stat">
+                    <span class="p-stat-value" id="p-total">0</span>
+                    <span class="p-stat-label">Total Marks</span>
+                </div>
+                <div class="p-stat">
+                    <span class="p-stat-value" id="p-average">0</span>
+                    <span class="p-stat-label">Average</span>
+                </div>
+                <div class="p-stat">
+                    <span class="p-stat-value" id="p-percentage">0%</span>
+                    <span class="p-stat-label">Percentage</span>
+                </div>
+                <div class="p-stat">
+                    <span class="p-stat-value" id="p-grade">—</span>
+                    <span class="p-stat-label">Grade</span>
+                </div>
+                <div class="p-stat">
+                    <span class="p-stat-value" id="p-subj-passed">0/0</span>
+                    <span class="p-stat-label">Subjects Passed</span>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-grid">
+                <div class="chart-card glass-card">
+                    <h4>Subject-wise Performance</h4>
+                    <div class="chart-wrap"><canvas id="bar-chart"></canvas></div>
+                </div>
+                <div class="chart-card glass-card">
+                    <h4>Pass / Fail Breakdown</h4>
+                    <div class="chart-wrap chart-wrap-pie"><canvas id="pie-chart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- Subject Breakdown -->
+            <div class="subject-breakdown glass-card">
+                <h4>Subject Details</h4>
+                <div id="subject-detail-list" class="subject-detail-list">
+                    <!-- Dynamic -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
